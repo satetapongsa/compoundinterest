@@ -1,495 +1,650 @@
-
-
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title> Wavy Company Group </title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  body {
-    background-color: #121212;
-    color: #eee;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  }
-  h1, h4 { color: #0ff; }
-  .card {
-    background-color: #222;
-    margin-bottom: 1rem;
-  }
-  button {
-    margin: 0.3rem 0.4rem 0.3rem 0;
-  }
-  table {
-    color: #eee;
-  }
-  .money-gain {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: #0f0;
-    font-size: 2rem;
-    font-weight: bold;
-    opacity: 1;
-    transition: all 1s ease-out;
-    pointer-events: none;
-    user-select: none;
-  }
-  #income, #money {
-    font-weight: 700;
-    color: #0ff;
-  }
-  #leaderboardBody tr.highlight {
-    color: #0f0;
-    font-weight: bold;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wavy Company Group - Premium Idle Tycoon</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #00f2ff;
+      --secondary: #7000ff;
+      --accent: #ff00c8;
+      --bg: #050510;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #e0e0e0;
+      --success: #00ff88;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(112, 0, 255, 0.05) 0%, transparent 40%);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(0, 242, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .glow-text {
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    .btn-premium {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      color: white;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4);
+      color: white;
+    }
+
+    .btn-outline-premium {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-premium:hover {
+      background: var(--primary);
+      color: var(--bg);
+    }
+
+    /* Calculator Styles */
+    #calc-floating {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      width: 320px;
+      z-index: 1000;
+      background: rgba(10, 10, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--primary);
+      border-radius: 20px;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      display: none;
+    }
+
+    #calc-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(0, 242, 255, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    #calc-toggle:hover {
+      background: var(--primary);
+      color: var(--bg);
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    /* Animations */
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+    }
+
+    .money-float {
+      position: fixed;
+      pointer-events: none;
+      color: var(--success);
+      font-weight: 700;
+      z-index: 9999;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 220px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .nav-stats {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5, 5, 16, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    .progress {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
+
+    tr {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+
+    td,
+    th {
+      padding: 12px !important;
+      border: none !important;
+    }
+
+    tr.highlight {
+      background: rgba(0, 242, 255, 0.1) !important;
+      border-left: 4px solid var(--primary);
+    }
+
+    .form-control {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      color: white;
+      border-radius: 10px;
+    }
+
+    .form-control:focus {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: var(--primary);
+      box-shadow: none;
+      color: white;
+    }
+
+    .badge-premium {
+      background: rgba(0, 242, 255, 0.2);
+      color: var(--primary);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    #income-display {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+  </style>
 </head>
-<body class="p-3">
-<h1 class="text-center mb-4"> Wavy Company Group </h1>
 
-<div class="row">
-  <div class="col-md-6">
+<body class="p-0">
 
-    <!-- เงินและรายได้ -->
-    <div class="card p-3">
-      <h4>💰 เงิน: $<span id="money">1000.00</span></h4>
-      <h4>🏦 รายได้รวม/วินาที: $<span id="income">1.00</span></h4>
+  <!-- Header Stats -->
+  <header class="nav-stats">
+    <div class="container-fluid px-4">
+      <div class="row align-items-center">
+        <div class="col-md-3">
+          <h3 class="m-0"><span style="color: var(--primary)">Wavy</span> Group</h3>
+        </div>
+        <div class="col-md-5 text-center">
+          <div class="d-inline-block mx-3">
+            <span class="small opacity-50 text-uppercase tracking-wider">Balance</span>
+            <div class="h4 m-0 glow-text">$<span id="money" class="stat-value">1,000.00</span></div>
+          </div>
+          <div class="d-inline-block mx-3">
+            <span class="small opacity-50 text-uppercase tracking-wider">Net / Sec</span>
+            <div class="h5 m-0 text-success">$+<span id="income" class="stat-value">0.00</span></div>
+          </div>
+        </div>
+        <div class="col-md-4 d-flex justify-content-end align-items-center gap-3">
+          <span class="badge-premium"><i class="fas fa-crown me-1"></i> Level <span id="upgradeLevel">1</span> <span class="text-success ms-1 small">(x<span id="miningMultDisplay">1</span> Multiplier)</span></span>
+          <div id="calc-toggle" onclick="toggleCalc()">
+            <i class="fas fa-calculator me-2"></i> CALCULATOR
+          </div>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <!-- ปุ่มซื้อของ -->
-    <div class="card p-3">
-      <h4>🏢 ธุรกิจ & อสังหา</h4>
-      <button class="btn btn-primary" onclick="buyBusiness()">ซื้อธุรกิจ (50$)</button> จำนวน: <span id="businessCount">0</span>
-      <button class="btn btn-primary" onclick="buyProperty()">ซื้ออสังหา (200$)</button> จำนวน: <span id="propertyCount">0</span>
-      <button class="btn btn-success" onclick="upgradeMining()">อัปเกรดการขุด ($<span id="upgradeCost">500</span>)</button> เลเวล: <span id="upgradeLevel">1</span>
-    </div>
+  <main class="container-fluid py-4 px-4">
+    <div class="row g-4">
+      <!-- LEFT COLUMN: Shops & Markets -->
+      <div class="col-lg-7">
+        <div class="row g-4">
+          <div class="col-md-5">
+            <div class="glass-card mb-4">
+              <h5 class="mb-4"><i class="fas fa-store me-2 text-primary"></i> Assets</h5>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small">Business (x<span id="businessCount">0</span>)</span>
+                </div>
+                <button class="btn btn-premium btn-sm w-100" onclick="buyBusiness()">Buy ($<span id="businessPriceDisplay">50</span>)</button>
+              </div>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small">Property (x<span id="propertyCount">0</span>)</span>
+                </div>
+                <button class="btn btn-premium btn-sm w-100" onclick="buyProperty()">Buy ($<span id="propertyPriceDisplay">200</span>)</button>
+              </div>
+              <div>
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="small">Upgrade (Level <span id="miningLevelDisplay">1</span>)</span>
+                </div>
+                <button class="btn btn-outline-premium btn-sm w-100" onclick="upgradeMining()">Fast-Track ($<span id="upgradeCostDisplay">500</span>)</button>
+              </div>
+            </div>
+            <div class="glass-card">
+              <h5 class="mb-3"><i class="fas fa-wallet me-2 text-primary"></i> Portfolio</h5>
+              <div id="income-details" class="small opacity-75"></div>
+            </div>
+          </div>
 
-    <!-- หุ้น -->
-    <div class="card p-3">
-      <h4>📈 หุ้น</h4>
-      <button class="btn btn-secondary" onclick="buyStock('wavyBank')">ซื้อ Wavy Bank ($<span id="wavyBankPrice">49</span>)</button>
-      <button class="btn btn-secondary" onclick="sellStock('wavyBank')">ขาย Wavy Bank</button> จำนวน: <span id="wavyBankCount">0</span>
-      <button class="btn btn-secondary" onclick="buyStock('wavyCompany')">ซื้อ Wavy Company ($<span id="wavyCompanyPrice">500</span>)</button>
-      <button class="btn btn-secondary" onclick="sellStock('wavyCompany')">ขาย Wavy Company</button> จำนวน: <span id="wavyCompanyCount">0</span>
-      <button class="btn btn-secondary" onclick="buyStock('moonTech')">ซื้อ WavyTech ($<span id="moonTechPrice">1000</span>)</button>
-      <button class="btn btn-secondary" onclick="sellStock('moonTech')">ขาย MoonTech</button> จำนวน: <span id="moonTechCount">0</span>
+          <div class="col-md-7">
+            <div class="glass-card h-100">
+              <h5 class="mb-4 d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-landmark me-2 text-primary"></i> Stock Market</span>
+                <span class="badge bg-success small" style="font-size: 0.6rem;">LIVE</span>
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-dark table-sm w-100 align-middle">
+                  <thead>
+                    <tr class="opacity-50 small">
+                      <th>SYMBOL</th>
+                      <th>PRICE</th>
+                      <th>OWNED</th>
+                      <th class="text-end">ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>WV-BK</strong><br><span class="opacity-50" style="font-size:0.7rem">Wavy Bank</span></td>
+                      <td class="text-primary font-monospace">$<span id="wavyBankPrice">49.00</span></td>
+                      <td class="font-monospace"><span id="wavyBankCount">0</span> <span class="badge bg-secondary opacity-50" style="font-size:0.6rem">5% Yield</span></td>
+                      <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                          <button class="btn btn-xs btn-outline-primary" style="font-size:0.6rem; padding: 2px 5px;" onclick="buyStock('wavyBank')">BUY</button>
+                          <button class="btn btn-xs btn-outline-danger" style="font-size:0.6rem; padding: 2px 5px;" onclick="sellStock('wavyBank')">SELL</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>WV-CO</strong><br><span class="opacity-50" style="font-size:0.7rem">Wavy Group</span></td>
+                      <td class="text-primary font-monospace">$<span id="wavyCompanyPrice">500.00</span></td>
+                      <td class="font-monospace"><span id="wavyCompanyCount">0</span> <span class="badge bg-secondary opacity-50" style="font-size:0.6rem">5% Yield</span></td>
+                      <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                          <button class="btn btn-xs btn-outline-primary" style="font-size:0.6rem; padding: 2px 5px;" onclick="buyStock('wavyCompany')">BUY</button>
+                          <button class="btn btn-xs btn-outline-danger" style="font-size:0.6rem; padding: 2px 5px;" onclick="sellStock('wavyCompany')">SELL</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>WV-TC</strong><br><span class="opacity-50" style="font-size:0.7rem">Wavy Tech</span></td>
+                      <td class="text-primary font-monospace">$<span id="moonTechPrice">1000.00</span></td>
+                      <td class="font-monospace"><span id="moonTechCount">0</span> <span class="badge bg-secondary opacity-50" style="font-size:0.6rem">5% Yield</span></td>
+                      <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                          <button class="btn btn-xs btn-outline-primary" style="font-size:0.6rem; padding: 2px 5px;" onclick="buyStock('moonTech')">BUY</button>
+                          <button class="btn btn-xs btn-outline-danger" style="font-size:0.6rem; padding: 2px 5px;" onclick="sellStock('moonTech')">SELL</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>WV-SP</strong><br><span class="opacity-50" style="font-size:0.7rem">Wavy Space</span></td>
+                      <td class="text-primary font-monospace">$<span id="wavySpacePrice">2500.00</span></td>
+                      <td class="font-monospace"><span id="wavySpaceCount">0</span> <span class="badge bg-secondary opacity-50" style="font-size:0.6rem">5% Yield</span></td>
+                      <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                          <button class="btn btn-xs btn-outline-primary" style="font-size:0.6rem; padding: 2px 5px;" onclick="buyStock('wavySpace')">BUY</button>
+                          <button class="btn btn-xs btn-outline-danger" style="font-size:0.6rem; padding: 2px 5px;" onclick="sellStock('wavySpace')">SELL</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>WV-EN</strong><br><span class="opacity-50" style="font-size:0.7rem">Wavy Energy</span></td>
+                      <td class="text-primary font-monospace">$<span id="wavyEnergyPrice">5000.00</span></td>
+                      <td class="font-monospace"><span id="wavyEnergyCount">0</span> <span class="badge bg-secondary opacity-50" style="font-size:0.6rem">5% Yield</span></td>
+                      <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                          <button class="btn btn-xs btn-outline-primary" style="font-size:0.6rem; padding: 2px 5px;" onclick="buyStock('wavyEnergy')">BUY</button>
+                          <button class="btn btn-xs btn-outline-danger" style="font-size:0.6rem; padding: 2px 5px;" onclick="sellStock('wavyEnergy')">SELL</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mt-2 text-center">
+                <button class="btn btn-link text-danger text-decoration-none btn-sm" onclick="sellAllStocks()">Liquidate Stocks</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="m-0"><i class="fas fa-trophy me-2 text-warning"></i> Global Leaderboard</h5>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-dark table-sm">
+              <tbody id="leaderboardBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="d-flex flex-column gap-4">
+          <div class="glass-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="m-0"><i class="fas fa-chart-line me-2 text-primary"></i> Performance Matrix</h5>
+              <span class="badge bg-secondary opacity-50" style="font-size:0.6rem">10s Interval</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="mainChart"></canvas>
+            </div>
+          </div>
+          <div class="glass-card">
+            <h5 class="mb-3"><i class="fas fa-history me-2 text-primary"></i> Asset Growth (Capital)</h5>
+            <div class="chart-container">
+              <canvas id="growthChart"></canvas>
+            </div>
+          </div>
+          <div class="glass-card p-3 d-flex justify-content-between align-items-center">
+            <button class="btn btn-sm btn-outline-danger" onclick="resetGame()">Factory Reset</button>
+          </div>
+        </div>
+      </div>
     </div>
-    
-    
-    
-    <!-- ตารางรายได้ & ปันผล -->
-    <div class="card p-3">
-      <h4>📋 ตารางรายได้ & ปันผล (ต่อวินาที)</h4>
-      <table class="table table-dark table-striped table-sm">
-        <thead>
-          <tr>
-            <th>รายการ</th>
-            <th>จำนวน</th>
-            <th>ปันผล/วิ ($)</th>
-          </tr>
-        </thead>
-        <tbody id="incomeTableBody"></tbody>
-      </table>
+  </main>
+
+  <!-- Compound Interest Calculator Modal -->
+  <div id="calc-floating">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="m-0 text-primary"><i class="fas fa-calculator me-2"></i> Investment Planner</h5>
+      <i class="fas fa-times cursor-pointer" onclick="toggleCalc()"></i>
+    </div>
+    <div class="mb-2">
+      <label class="small opacity-50">Principal ($)</label>
+      <input type="number" id="calc-p" class="form-control form-control-sm" value="1000">
+    </div>
+    <div class="mb-2">
+      <label class="small opacity-50">Annual Interest (%)</label>
+      <input type="number" id="calc-r" class="form-control form-control-sm" value="5">
+    </div>
+    <div class="row mb-2">
+      <div class="col">
+        <label class="small opacity-50">Years</label>
+        <input type="number" id="calc-t" class="form-control form-control-sm" value="5">
+      </div>
+      <div class="col">
+        <label class="small opacity-50">Compound/Yr</label>
+        <input type="number" id="calc-n" class="form-control form-control-sm" value="12">
+      </div>
+    </div>
+    <div class="p-3 mt-3 text-center" style="background: rgba(0,242,255,0.1); border-radius: 12px; border: 1px solid rgba(0,242,255,0.2);">
+      <span class="small opacity-75">Future Value:</span><br>
+      <h4 class="glow-text m-0">$<span id="calc-res">1283.36</span></h4>
     </div>
   </div>
-  
-  
 
-  <div class="col-md-6">
-    <!-- กราฟรายได้ -->
-    <div class="card p-3 mb-3">
-      <h4>📊 กราฟรายได้</h4>
-      <canvas id="incomeChart" height="150"></canvas>
-    </div>
 
-    <!-- กราฟปันผล -->
-    <div class="card p-3 mb-3">
-      <h4>📊 กราฟปันผล</h4>
-      <canvas id="dividendChart" height="150"></canvas>
-    </div>
+  <script>
+    // --- Game State ---
+    let money = 1000;
+    let income = 0;
+    let businessCount = 0;
+    let propertyCount = 0;
+    let upgradeLevel = 1;
+    let upgradeCost = 500;
 
-    <!-- กราฟรวม -->
-    <div class="card p-3 mb-3">
-      <h4>📊 กราฟรวมรายได้ + ปันผล</h4>
-      <canvas id="totalChart" height="150"></canvas>
-    </div>
+    const businessPrice = 50;
+    const propertyPrice = 200;
 
-    <!-- ลีดเดอร์บอร์ด -->
-    <div class="card p-3 ">
-      <h4>🏆 ลีดเดอร์บอร์ด 10 อันดับ</h4>
-      <table class="table table-dark table-striped table-sm">
-        <thead>
-          <tr>
-            <th>อันดับ</th>
-            <th>ชื่อ</th>
-            <th>สินทรัพย์ ($)</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboardBody" height="150"></tbody>
-      </table>
-    </div>
+    let wavyBankCount = 0;
+    let wavyCompanyCount = 0;
+    let moonTechCount = 0;
+    let wavySpaceCount = 0;
+    let wavyEnergyCount = 0;
 
-  </div>
-</div>
+    let stockPrices = { wavyBank: 49, wavyCompany: 500, moonTech: 1000, wavySpace: 2500, wavyEnergy: 5000 };
+    const dividendRates = { business: 0.1, property: 0.15, wavyBank: 0.05, wavyCompany: 0.05, moonTech: 0.05, wavySpace: 0.05, wavyEnergy: 0.05 };
 
-<!-- ปุ่มรีเซ็ต -->
-    <div class="card p-3">
-      <button class="btn btn-danger" onclick="resetGame()">🔄 เริ่มใหม่</button>
-    </div>
+    const playerName = "ME (YOU)";
+    let leaderboard = [
+      { name: "Wavy Galactic", asset: 999999999999 }, { name: "Apex Alpha", asset: 512456793 },
+      { name: "Titan Capital", asset: 412546379 }, { name: "Voyager Capital", asset: 354976123 },
+      { name: "Neural Link", asset: 254976124 }, { name: "Cyberdyne", asset: 1200000 }
+    ];
 
-<script>
-// ตัวแปรหลัก
-let money = 1000;
-let income = 0;
-let businessCount = 0;
-let propertyCount = 0;
-let upgradeLevel = 1;
-let upgradeCost = 1000;
+    // --- Initialization ---
 
-let wavyBankCount = 0;
-let wavyCompanyCount = 0;
-let moonTechCount = 0;
+    function init() {
+      loadGame();
+      setupCharts();
+      updateUI();
 
-const stockPrices = {
-  wavyBank: 49,
-  wavyCompany: 500,
-  moonTech: 1000,
-};
+      setInterval(() => {
+        calculateIncome();
+        money += income / 10;
+        document.getElementById("money").textContent = money.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }, 100);
 
-const businessPrice = 10;
-const propertyPrice = 100;
+      let tickCount = 0;
+      setInterval(() => {
+        tickCount++;
+        if (tickCount % 2 === 0) simulateStocks();
+        if (tickCount % 1 === 0) saveGame(); 
+        if (tickCount % 10 === 0) { // Every 10s for graphs
+          updateUI();
+          updateChartsData();
+        }
+      }, 1000);
 
-const dividendRates = {
-  business: 0.10,    // 10% ต่อ 10 วิ = 1% ต่อวิ
-  property: 0.10,
-  wavyBank: 0.50,
-  wavyCompany: 0.1,
-  moonTech: 0.1,
-};
+      ['calc-p', 'calc-r', 'calc-t', 'calc-n'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateCompound);
+      });
+      calculateCompound();
+    }
 
-const playerName = "ME";
+    function simulateStocks() {
+      for (const stock in stockPrices) {
+        const change = (Math.random() - 0.48) * (stockPrices[stock] * 0.05);
+        stockPrices[stock] = Math.max(1, stockPrices[stock] + change);
+        document.getElementById(stock + "Price").textContent = stockPrices[stock].toFixed(2);
+      }
+    }
 
-// ลีดเดอร์บอร์ดเริ่มต้น
-let leaderboard = [
-  { name: "Wavy Company", asset: 964375194368 },
-  { name: "InvestorA", asset: 512456793 },
-  { name: "InvestorB", asset: 412546379 },
-  { name: "InvestorC", asset: 354976123 },
-  { name: "InvestorD", asset: 254976124 },
-  { name: "InvestorE", asset: 14579163 },
-  { name: "InvestorF", asset: 1200000 },
-  { name: "InvestorG", asset: 900009 },
-  { name: "InvestorH", asset: 81245 },
-  { name: "InvestorI", asset: 7059 }
-];
+    // --- Logic ---
 
-// ช่วงเวลาการอัปเดต (ms)
-const updateInterval = 1000;
+    function calculateIncome() {
+      const mult = Math.pow(2, upgradeLevel - 1);
+      const base = (businessCount * businessPrice * dividendRates.business / 10) +
+                   (propertyCount * propertyPrice * dividendRates.property / 10);
+      
+      const dividends = (wavyBankCount * stockPrices.wavyBank * dividendRates.wavyBank / 10) +
+                        (wavyCompanyCount * stockPrices.wavyCompany * dividendRates.wavyCompany / 10) +
+                        (moonTechCount * stockPrices.moonTech * dividendRates.moonTech / 10) +
+                        (wavySpaceCount * stockPrices.wavySpace * dividendRates.wavySpace / 10) +
+                        (wavyEnergyCount * stockPrices.wavyEnergy * dividendRates.wavyEnergy / 10);
+      
+      income = (base + dividends) * mult;
+    }
 
-function updateUI() {
-  document.getElementById("money").textContent = money.toFixed(2);
-  document.getElementById("income").textContent = income.toFixed(2);
-  document.getElementById("businessCount").textContent = businessCount;
-  document.getElementById("propertyCount").textContent = propertyCount;
-  document.getElementById("upgradeLevel").textContent = upgradeLevel;
-  document.getElementById("upgradeCost").textContent = upgradeCost;
-  document.getElementById("wavyBankCount").textContent = wavyBankCount;
-  document.getElementById("wavyCompanyCount").textContent = wavyCompanyCount;
-  document.getElementById("moonTechCount").textContent = moonTechCount;
-  document.getElementById("wavyBankPrice").textContent = stockPrices.wavyBank.toFixed(2);
-  document.getElementById("wavyCompanyPrice").textContent = stockPrices.wavyCompany.toFixed(2);
-  document.getElementById("moonTechPrice").textContent = stockPrices.moonTech.toFixed(2);
+    function buyBusiness() { if (money >= businessPrice) { money -= businessPrice; businessCount++; calculateIncome(); updateUI(); } }
+    function buyProperty() { if (money >= propertyPrice) { money -= propertyPrice; propertyCount++; calculateIncome(); updateUI(); } }
+    function upgradeMining() {
+      if (money >= upgradeCost) {
+        money -= upgradeCost;
+        upgradeLevel++;
+        upgradeCost *= 5;
+        calculateIncome();
+        updateUI();
+      }
+    }
 
-  updateIncomeTable();
-  updateLeaderboard();
-}
+    function buyStock(s) { 
+      if (money >= stockPrices[s]) { 
+        money -= stockPrices[s]; 
+        if(s==='wavyBank') wavyBankCount++; else if(s==='wavyCompany') wavyCompanyCount++; else if(s==='moonTech') moonTechCount++;
+        else if(s==='wavySpace') wavySpaceCount++; else if(s==='wavyEnergy') wavyEnergyCount++;
+        stockPrices[s] *= 1.05;
+        calculateIncome(); updateUI(); 
+      } 
+    }
+    function sellStock(s) {
+      const counts = { wavyBank: wavyBankCount, wavyCompany: wavyCompanyCount, moonTech: moonTechCount, wavySpace: wavySpaceCount, wavyEnergy: wavyEnergyCount };
+      if (counts[s] > 0) {
+        money += stockPrices[s];
+        if(s==='wavyBank') wavyBankCount--; else if(s==='wavyCompany') wavyCompanyCount--; else if(s==='moonTech') moonTechCount--;
+        else if(s==='wavySpace') wavySpaceCount--; else if(s==='wavyEnergy') wavyEnergyCount--;
+        calculateIncome(); updateUI();
+      }
+    }
+    function sellAllStocks() {
+      const val = (wavyBankCount*stockPrices.wavyBank)+(wavyCompanyCount*stockPrices.wavyCompany)+(moonTechCount*stockPrices.moonTech)+(wavySpaceCount*stockPrices.wavySpace)+(wavyEnergyCount*stockPrices.wavyEnergy);
+      money+=val; wavyBankCount=wavyCompanyCount=moonTechCount=wavySpaceCount=wavyEnergyCount=0; calculateIncome(); updateUI();
+    }
 
-function animateMoneyGain(amount) {
-  if(amount <= 0) return;
-  const anim = document.createElement("div");
-  anim.textContent = "+$" + amount.toFixed(2);
-  anim.className = "money-gain";
-  document.body.appendChild(anim);
-  setTimeout(() => {
-    anim.style.transform = "translate(-50%, -200%)";
-    anim.style.opacity = "0";
-  }, 10);
-  setTimeout(() => {
-    anim.remove();
-  }, 1000);
-}
+    function updateUI() {
+      document.getElementById("income").textContent = income.toLocaleString(undefined, {minimumFractionDigits: 2});
+      document.getElementById("upgradeLevel").textContent = upgradeLevel;
+      document.getElementById("miningLevelDisplay").textContent = upgradeLevel;
+      document.getElementById("miningMultDisplay").textContent = Math.pow(2, upgradeLevel - 1);
+      document.getElementById("upgradeCostDisplay").textContent = upgradeCost.toLocaleString();
+      document.getElementById("businessCount").textContent = businessCount;
+      document.getElementById("propertyCount").textContent = propertyCount;
+      document.getElementById("wavyBankCount").textContent = wavyBankCount;
+      document.getElementById("wavyCompanyCount").textContent = wavyCompanyCount;
+      document.getElementById("moonTechCount").textContent = moonTechCount;
+      document.getElementById("wavySpaceCount").textContent = wavySpaceCount;
+      document.getElementById("wavyEnergyCount").textContent = wavyEnergyCount;
 
-// ฟังก์ชันซื้อ-ขาย
-function buyBusiness() {
-  if (money >= businessPrice) {
-    money -= businessPrice;
-    businessCount++;
-    updateIncome();
-    updateUI();
-    animateMoneyGain(-businessPrice);
-  }
-}
+      const details = document.getElementById("income-details");
+      const mult = Math.pow(2, upgradeLevel-1);
+      details.innerHTML = `Base Profit: $${(( (businessCount*businessPrice*0.01) + (propertyCount*propertyPrice*0.015) )*mult).toFixed(2)}/s<br>Stock Yield: $${(( (wavyBankCount*stockPrices.wavyBank*0.005)+(wavyCompanyCount*stockPrices.wavyCompany*0.005)+(moonTechCount*stockPrices.moonTech*0.005)+(wavySpaceCount*stockPrices.wavySpace*0.005)+(wavyEnergyCount*stockPrices.wavyEnergy*0.005) )*mult).toFixed(2)}/s`;
+      
+      updateLeaderboard();
+    }
 
-function buyProperty() {
-  if (money >= propertyPrice) {
-    money -= propertyPrice;
-    propertyCount++;
-    updateIncome();
-    updateUI();
-    animateMoneyGain(-propertyPrice);
-  }
-}
+    function updateLeaderboard() {
+      const total = money + (businessCount*50) + (propertyCount*200) + (wavyBankCount*stockPrices.wavyBank) + (wavyCompanyCount*stockPrices.wavyCompany) + (moonTechCount*stockPrices.moonTech) + (wavySpaceCount*stockPrices.wavySpace) + (wavyEnergyCount*stockPrices.wavyEnergy);
+      let list = leaderboard.filter(p => p.name !== playerName);
+      list.push({ name: playerName, asset: total });
+      list.sort((a,b) => b.asset - a.asset);
+      const b = document.getElementById("leaderboardBody"); b.innerHTML = "";
+      list.slice(0,10).forEach((p,i) => {
+        const tr = document.createElement("tr"); if(p.name===playerName) tr.className="highlight";
+        tr.innerHTML = `<td>${i+1}</td><td>${p.name}</td><td class="text-end">$${p.asset.toLocaleString()}</td>`;
+        b.appendChild(tr);
+      });
+    }
 
-function upgradeMining() {
-  if (money >= upgradeCost) {
-    money -= upgradeCost;
-    upgradeLevel++;
-    income *= 2;
-    upgradeCost *= 2;
-    updateUI();
-    animateMoneyGain(-upgradeCost / 2);
-  }
-}
+    function saveGame() {
+      const state = { money, businessCount, propertyCount, upgradeLevel, upgradeCost, wavyBankCount, wavyCompanyCount, moonTechCount, wavySpaceCount, wavyEnergyCount, stockPrices };
+      localStorage.setItem('wavyTycoonFullRestore', JSON.stringify(state));
+    }
+    function loadGame() {
+      const s = localStorage.getItem('wavyTycoonFullRestore');
+      if(s) {
+        const d = JSON.parse(s);
+        money=d.money; businessCount=d.businessCount; propertyCount=d.propertyCount; upgradeLevel=d.upgradeLevel; upgradeCost=d.upgradeCost;
+        wavyBankCount=d.wavyBankCount; wavyCompanyCount=d.wavyCompanyCount; moonTechCount=d.moonTechCount; wavySpaceCount=d.wavySpaceCount; wavyEnergyCount=d.wavyEnergyCount;
+        if(d.stockPrices) stockPrices=d.stockPrices;
+      }
+    }
+    function resetGame() { localStorage.removeItem('wavyTycoonFullRestore'); location.reload(); }
 
-function buyStock(stock) {
-  if (money >= stockPrices[stock]) {
-    money -= stockPrices[stock];
-    if (stock === "wavyBank") wavyBankCount++;
-    else if (stock === "wavyCompany") wavyCompanyCount++;
-    else if (stock === "moonTech") moonTechCount++;
-    updateIncome();
-    updateUI();
-    animateMoneyGain(-stockPrices[stock]);
-  }
-}
+    function toggleCalc() { const e = document.getElementById('calc-floating'); e.style.display = e.style.display==='block' ? 'none' : 'block'; }
+    function calculateCompound() {
+      const P=parseFloat(document.getElementById('calc-p').value)||0, r=(parseFloat(document.getElementById('calc-r').value)||0)/100, t=parseFloat(document.getElementById('calc-t').value)||0, n=parseFloat(document.getElementById('calc-n').value)||1;
+      const A = P * Math.pow((1 + r/n), (n*t));
+      document.getElementById('calc-res').textContent = A.toLocaleString(undefined, {minimumFractionDigits:2});
+    }
 
-function sellStock(stock) {
-  if (stock === "wavyBank" && wavyBankCount > 0) {
-    money += stockPrices.wavyBank;
-    wavyBankCount--;
-  } else if (stock === "wavyCompany" && wavyCompanyCount > 0) {
-    money += stockPrices.wavyCompany;
-    wavyCompanyCount--;
-  } else if (stock === "moonTech" && moonTechCount > 0) {
-    money += stockPrices.moonTech;
-    moonTechCount--;
-  }
-  updateIncome();
-  updateUI();
-  animateMoneyGain(0);
-}
+    let mainChart, growthChart;
+    function setupCharts() {
+      const c1 = document.getElementById('mainChart').getContext('2d'), c2 = document.getElementById('growthChart').getContext('2d');
+      mainChart = new Chart(c1, { type:'line', data:{ labels:[], datasets:[{label:'Income', data:[], borderColor:'#00f2ff', tension:0.4}] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{grid:{color:'rgba(255,255,255,0.05)'}}} } });
+      growthChart = new Chart(c2, { type:'line', data:{ labels:[], datasets:[{label:'Assets', data:[], borderColor:'#7000ff', fill:true, backgroundColor:'rgba(112,0,255,0.1)', tension:0.4}] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{grid:{color:'rgba(255,255,255,0.05)'}}} } });
+    }
+    function updateChartsData() {
+      const time = new Date().toLocaleTimeString();
+      const total = money + (businessCount*50) + (propertyCount*200) + (wavyBankCount*stockPrices.wavyBank) + (wavyCompanyCount*stockPrices.wavyCompany) + (moonTechCount*stockPrices.moonTech) + (wavySpaceCount*stockPrices.wavySpace) + (wavyEnergyCount*stockPrices.wavyEnergy);
+      if(mainChart.data.labels.length > 15) { mainChart.data.labels.shift(); mainChart.data.datasets[0].data.shift(); growthChart.data.labels.shift(); growthChart.data.datasets[0].data.shift(); }
+      mainChart.data.labels.push(time); mainChart.data.datasets[0].data.push(income); mainChart.update();
+      growthChart.data.labels.push(time); growthChart.data.datasets[0].data.push(total); growthChart.update();
+    }
 
-function resetGame() {
-  if(confirm("แน่ใจจะเริ่มใหม่? ข้อมูลทั้งหมดจะถูกล้าง")) {
-    money = 1000;
-    income = 0;
-    businessCount = 0;
-    propertyCount = 0;
-    upgradeLevel = 1;
-    upgradeCost = 1000;
-    wavyBankCount = 0;
-    wavyCompanyCount = 0;
-    moonTechCount = 0;
-    updateIncome();
-    updateUI();
-  }
-}
-
-// คำนวณรายได้รวมและปันผลต่อวิ
-function updateIncome() {
-  // รายได้จากธุรกิจและอสังหา (สมมติตรงนี้คูณเลเวลด้วยรายได้พื้นฐาน)
-  const businessIncome = businessCount * businessPrice * 0.1 * upgradeLevel;
-  const propertyIncome = propertyCount * propertyPrice * 0.1 * upgradeLevel;
-
-  // ปันผลหุ้น 10% ต่อ 10 วิ = 1% ต่อวิ (ยกเว้น Wavy Company 5% ต่อ 10 วิ = 0.5% ต่อวิ)
-  const wavyBankDividend = wavyBankCount * stockPrices.wavyBank * dividendRates.wavyBank / 10;
-  const wavyCompanyDividend = wavyCompanyCount * stockPrices.wavyCompany * dividendRates.wavyCompany / 10;
-  const moonTechDividend = moonTechCount * stockPrices.moonTech * dividendRates.moonTech / 10;
-
-  income = businessIncome + propertyIncome + wavyBankDividend + wavyCompanyDividend + moonTechDividend;
-}
-
-// อัพเดทตารางรายได้ & ปันผล
-function updateIncomeTable() {
-  const rows = [
-    { name: "ธุรกิจ", count: businessCount, dividendPerSecond: businessCount * businessPrice * dividendRates.business / 10 * upgradeLevel },
-    { name: "อสังหา", count: propertyCount, dividendPerSecond: propertyCount * propertyPrice * dividendRates.property / 10 * upgradeLevel },
-    { name: "Wavy Bank", count: wavyBankCount, dividendPerSecond: wavyBankCount * stockPrices.wavyBank * dividendRates.wavyBank / 10 },
-    { name: "Wavy Company", count: wavyCompanyCount, dividendPerSecond: wavyCompanyCount * stockPrices.wavyCompany * dividendRates.wavyCompany / 10 },
-    { name: "MoonTech", count: moonTechCount, dividendPerSecond: moonTechCount * stockPrices.moonTech * dividendRates.moonTech / 10 }
-  ];
-
-  const tbody = document.getElementById("incomeTableBody");
-  tbody.innerHTML = "";
-
-  rows.forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.name}</td><td>${row.count}</td><td>$${row.dividendPerSecond.toFixed(2)}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// อัปเดตลีดเดอร์บอร์ด (เรียงตามทรัพย์สิน + ของเรา)
-function updateLeaderboard() {
-  // คำนวณสินทรัพย์ผู้เล่นเราก่อน
-  const myAsset =
-    money +
-    businessCount * businessPrice +
-    propertyCount * propertyPrice +
-    wavyBankCount * stockPrices.wavyBank +
-    wavyCompanyCount * stockPrices.wavyCompany +
-    moonTechCount * stockPrices.moonTech;
-
-  // รวมเข้าลิสต์ แล้วเรียง
-  let updated = leaderboard.filter(p => p.name !== playerName);
-  updated.push({ name: playerName, asset: myAsset });
-  updated.sort((a, b) => b.asset - a.asset);
-
-  const top10 = updated.slice(0, 10);
-
-  const tbody = document.getElementById("leaderboardBody");
-  tbody.innerHTML = "";
-
-  top10.forEach((p, i) => {
-    const tr = document.createElement("tr");
-    if(p.name === playerName) tr.classList.add("highlight");
-    tr.innerHTML = `<td>${i + 1}</td><td>${p.name}</td><td>$${p.asset.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// Chart.js Setup
-const ctxIncome = document.getElementById('incomeChart').getContext('2d');
-const ctxDividend = document.getElementById('dividendChart').getContext('2d');
-const ctxTotal = document.getElementById('totalChart').getContext('2d');
-
-let incomeData = {
-  labels: [],
-  datasets: [{
-    label: 'รายได้/วินาที',
-    data: [],
-    backgroundColor: 'rgba(0, 255, 255, 0.3)',
-    borderColor: 'cyan',
-    borderWidth: 2,
-    fill: true,
-    tension: 0.3,
-  }]
-};
-
-let dividendData = {
-  labels: [],
-  datasets: [{
-    label: 'ปันผล/วินาที',
-    data: [],
-    backgroundColor: 'rgba(0, 255, 0, 0.3)',
-    borderColor: 'lime',
-    borderWidth: 2,
-    fill: true,
-    tension: 0.3,
-  }]
-};
-
-let totalData = {
-  labels: [],
-  datasets: [{
-    label: 'รายได้รวม + ปันผล',
-    data: [],
-    backgroundColor: 'rgba(255, 0, 255, 0.3)',
-    borderColor: 'magenta',
-    borderWidth: 2,
-    fill: true,
-    tension: 0.3,
-  }]
-};
-
-const incomeChart = new Chart(ctxIncome, {
-  type: 'line',
-  data: incomeData,
-  options: {
-    scales: { y: { beginAtZero: true } },
-    animation: { duration: 500 },
-  }
-});
-
-const dividendChart = new Chart(ctxDividend, {
-  type: 'line',
-  data: dividendData,
-  options: {
-    scales: { y: { beginAtZero: true } },
-    animation: { duration: 500 },
-  }
-});
-
-const totalChart = new Chart(ctxTotal, {
-  type: 'line',
-  data: totalData,
-  options: {
-    scales: { y: { beginAtZero: true } },
-    animation: { duration: 500 },
-  }
-});
-
-function updateCharts() {
-  const time = new Date().toLocaleTimeString();
-
-  // รายได้ธุรกิจ+อสังหา
-  const businessIncome = businessCount * businessPrice * 0.1 * upgradeLevel;
-  const propertyIncome = propertyCount * propertyPrice * 0.1 * upgradeLevel;
-  const totalDividend = 
-    wavyBankCount * stockPrices.wavyBank * dividendRates.wavyBank / 10 +
-    wavyCompanyCount * stockPrices.wavyCompany * dividendRates.wavyCompany / 10 +
-    moonTechCount * stockPrices.moonTech * dividendRates.moonTech / 10;
-
-  // อัพเดทข้อมูลกราฟรายได้
-  if(incomeData.labels.length > 20) {
-    incomeData.labels.shift();
-    incomeData.datasets[0].data.shift();
-  }
-  incomeData.labels.push(time);
-  incomeData.datasets[0].data.push(businessIncome + propertyIncome);
-
-  // กราฟปันผล
-  if(dividendData.labels.length > 20) {
-    dividendData.labels.shift();
-    dividendData.datasets[0].data.shift();
-  }
-  dividendData.labels.push(time);
-  dividendData.datasets[0].data.push(totalDividend);
-
-  // กราฟรวมรายได้+ปันผล
-  if(totalData.labels.length > 20) {
-    totalData.labels.shift();
-    totalData.datasets[0].data.shift();
-  }
-  totalData.labels.push(time);
-  totalData.datasets[0].data.push(businessIncome + propertyIncome + totalDividend);
-
-  incomeChart.update();
-  dividendChart.update();
-  totalChart.update();
-}
-
-// เพิ่มเงินตามรายได้ทุกวินาที
-function gainMoney() {
-  money += income;
-  updateUI();
-}
-
-// main loop
-setInterval(() => {
-  updateIncome();
-  gainMoney();
-  updateCharts();
-}, updateInterval);
-
-// เริ่มเกม
-updateIncome();
-updateUI();
-updateCharts();
-</script>
+    init();
+  </script>
 </body>
+
 </html>
